@@ -8,6 +8,7 @@ import pandas as pd
 import requests
 import re
 import asyncio
+import time
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -150,6 +151,47 @@ async def lista_jogos_favoritos(ctx):
 async def favoritos(ctx):
     await ctx.send("Use !lista_jogos_favoritos para ver a lista de jogos favoritos.")
 
-bot.run('MTIyODAwODk3MzUwNTEzODc2OQ.GNbZPf.lTMtGZJLc4zjkTbs-ETnQOZF01SBdTkcNgDHhw')
+async def verificar_descontos(ctx):
+    try:
+        favoritos = pd.read_csv('favoritos.csv')
+    except FileNotFoundError:
+        await ctx.send("Arquivo favoritos.csv não encontrado.")
+        return
+
+    jogos = favoritos.to_dict(orient='records')
+
+    for jogo in jogos:
+        jogo_id = jogo['id']
+        response = requests.get(f'https://store.steampowered.com/api/appdetails?appids={jogo_id}')
+        dados = response.json()
+
+        if dados[str(jogo_id)]['success']:
+            detalhes = dados[str(jogo_id)]['data']
+            if 'price_overview' in detalhes:
+                preco_original = detalhes['price_overview']['final_formatted']
+                preco_com_desconto = detalhes['price_overview']['discount_percent']
+                imagem_jogo = detalhes.get('header_image', '')
+
+                if preco_com_desconto > 0:
+                    embed = discord.Embed(title=detalhes['name'], color=discord.Color.green())
+                    embed.add_field(name="Preço Original", value=preco_original, inline=False)
+                    embed.add_field(name="Desconto", value=f"{preco_com_desconto}%", inline=False)
+                    embed.set_image(url=imagem_jogo)  # Adiciona a imagem do jogo
+
+                    await ctx.send(embed=embed)
+
+async def agendar_verificacoes(ctx):
+    while True:
+        await verificar_descontos(ctx)
+        await asyncio.sleep(21600)
+
+@bot.event
+async def on_ready():
+    print(f'{bot.user} está online!')
+    for guild in bot.guilds:  # Para cada guilda em que o bot está
+        channel = guild.text_channels[0]  # Escolha um canal (ou modifique conforme necessário)
+        asyncio.create_task(agendar_verificacoes(channel))
+
+bot.run('')
 
 
