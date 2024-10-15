@@ -31,9 +31,10 @@ class Jogos(commands.Cog):
                 i=i+1
                 if(i%10==0):
                     jogos+="\n```"
+                    print(jogos)
                     await ctx.send(jogos)
                     jogos="```"
-        print(jogos)
+                    
         return jogos    
         
     @commands.command(help="Esse comando serve para buscar o preço de um jogo na Steam.")
