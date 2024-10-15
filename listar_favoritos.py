@@ -22,7 +22,9 @@ class Favoritos(commands.Cog):
         try:
             favoritos = pd.read_csv('favoritos.csv')
         except FileNotFoundError:
-            await ctx.send("Arquivo favoritos.csv não encontrado.")
+            print("Arquivo favoritos.csv não encontrado, criando.")
+            with open("favoritos.csv", "w") as arquivo:
+                arquivo.write("id,nome")
             return
 
         jogos = []
@@ -42,7 +44,9 @@ class Favoritos(commands.Cog):
             favoritos = pd.read_csv('favoritos.csv')
         except FileNotFoundError:
             print("Arquivo favoritos.csv não encontrado, criando.")
-            f = open("favoritos.csv", "x")
+            with open("favoritos.csv", "w") as arquivo:
+                arquivo.write("id,nome")
+            
             return
 
         jogos = favoritos.to_dict(orient='records')
