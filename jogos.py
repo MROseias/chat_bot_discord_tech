@@ -18,7 +18,7 @@ class Jogos(commands.Cog):
             else:
                 return None
 
-    async def buscar_jogos(self,jogos_que_achou):   
+    async def buscar_jogos(self,ctx,jogos_que_achou):   
         jogos="```"
         i=0
         for _, row in jogos_que_achou.iterrows():
@@ -29,9 +29,10 @@ class Jogos(commands.Cog):
                 jogos+=f"\nApp ID: {appid}, Nome do Jogo (PT-BR): {localized_name}"
                 print(f"\nApp ID: {appid}, Nome do Jogo (PT-BR): {localized_name}")
                 i=i+1
-                if(i==10):
-                    break
-        jogos+="\n```"
+                if(i%10==0):
+                    jogos+="\n```"
+                    await ctx.send(jogos)
+                    jogos="```"
         print(jogos)
         return jogos    
         
@@ -55,7 +56,7 @@ class Jogos(commands.Cog):
             if not matching_games.empty:
                 
                 await ctx.send("Preparando lista com os Ids dos jogos que eu encontrei: ")
-                await ctx.send(await self.buscar_jogos(matching_games))
+                await ctx.send(await self.buscar_jogos(ctx,matching_games))
             else:
                 await ctx.send("Não encontrei nenhum jogo :( . Você esqueceu de colocar algum espaço?")
 
