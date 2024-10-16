@@ -31,9 +31,6 @@ async def on_ready():
         # asyncio.create_task(agendar_verificacoes(channel))
     await bot.add_cog(Jogos(bot))
     await bot.add_cog(Favoritos(bot))
-
-
-
-ri.7oXyD7Zk88jf3oypd-Sfbw-vKXTUEqLDfJol0I')
+bot.run()
 
 
