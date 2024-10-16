@@ -105,7 +105,7 @@ class Jogos(commands.Cog):
                     nome=await self.get_localized_name(id)
                     dicionario={
                         "id":id,
-                        "nome":nome
+                        "nomeid":nome
                     }
                     dataframe=pd.DataFrame([dicionario])
                     dataframe.to_csv("favoritos.csv",mode="a", index=False, header=False)

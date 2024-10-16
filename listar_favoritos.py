@@ -24,14 +24,14 @@ class Favoritos(commands.Cog):
         except FileNotFoundError:
             print("Arquivo favoritos.csv não encontrado, criando.")
             with open("favoritos.csv", "w") as arquivo:
-                arquivo.write("id,nome")
+                arquivo.write("id,nomeid")
             return
 
         jogos = []
 
         if not favoritos.empty:
             for _, row in favoritos.iterrows():
-                jogos.append(f"{row['id']}: {row['nome']}")
+                jogos.append(f"{row['id']}: {row['nomeid']}")
             
             await ctx.send("Meus jogos favoritos:\n" + "\n".join(jogos))
         else:
@@ -45,7 +45,7 @@ class Favoritos(commands.Cog):
         except FileNotFoundError:
             print("Arquivo favoritos.csv não encontrado, criando.")
             with open("favoritos.csv", "w") as arquivo:
-                arquivo.write("id,nome")
+                arquivo.write("id,nomeid")
             
             return
 
