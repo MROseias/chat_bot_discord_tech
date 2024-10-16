@@ -9,7 +9,7 @@ class Jogos(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_localized_name(appid):
+    async def get_localized_name(self,appid):
             url_store = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=brazilian"
             response = requests.get(url_store)
             data = response.json()
@@ -21,6 +21,7 @@ class Jogos(commands.Cog):
     async def buscar_jogos(self,ctx,jogos_que_achou):   
         jogos="```"
         i=0
+        enviou_jogos=False
         for _, row in jogos_que_achou.iterrows():
             appid = row['appid']
             localized_name = await self.get_localized_name(appid)
@@ -34,8 +35,10 @@ class Jogos(commands.Cog):
                     print(jogos)
                     await ctx.send(jogos)
                     jogos="```"
-                    
-        return jogos    
+        if(i %10!=0):
+            jogos+="\n```"
+            print(jogos)
+            await ctx.send(jogos)         
         
     @commands.command(help="Esse comando serve para buscar o preço de um jogo na Steam.")
     async def jogo(self,ctx,jogo):    
@@ -57,7 +60,7 @@ class Jogos(commands.Cog):
             if not matching_games.empty:
                 
                 await ctx.send("Preparando lista com os Ids dos jogos que eu encontrei: ")
-                await ctx.send(await self.buscar_jogos(ctx,matching_games))
+                await self.buscar_jogos(ctx,matching_games)
             else:
                 await ctx.send("Não encontrei nenhum jogo :( . Você esqueceu de colocar algum espaço?")
 
