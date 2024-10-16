@@ -14,6 +14,21 @@ class Favoritos(commands.Cog):
         self.verificar_descontos.cancel()
     
     @commands.command()
+    async def desfavoritar(self,ctx,id):
+        df= pd.read_csv('favoritos.csv')
+        print(df)
+        print(id)
+        if(not id.isdigit()):
+            await ctx.send("Só sou capaz de remover por id!!!")
+            return
+        id=int(id)
+        
+        df = df[df['id'] != id]
+        df.to_csv('favoritos.csv', mode='w',index=False)
+        await ctx.send("Jogo removido.")
+        
+    
+    @commands.command()
     async def favoritos(self,ctx):
         await ctx.send("Use !lista_jogos_favoritos para ver a lista de jogos favoritos do servidor.")
         
@@ -24,16 +39,16 @@ class Favoritos(commands.Cog):
         except FileNotFoundError:
             print("Arquivo favoritos.csv não encontrado, criando.")
             with open("favoritos.csv", "w") as arquivo:
-                arquivo.write("id,nomeid")
+                arquivo.write("id,nomeid\n")
             return
 
-        jogos = []
+        jogos = "```\nid, nome\n"
 
         if not favoritos.empty:
             for _, row in favoritos.iterrows():
-                jogos.append(f"{row['id']}: {row['nomeid']}")
-            
-            await ctx.send("Meus jogos favoritos:\n" + "\n".join(jogos))
+                jogos+=f"{row['id']}: {row['nomeid']}\n"
+            jogos+="\n```"
+            await ctx.send("Jogos favoritos:\n\n"+jogos)
         else:
             await ctx.send("Não há jogos favoritos na lista.")
             
@@ -45,15 +60,16 @@ class Favoritos(commands.Cog):
         except FileNotFoundError:
             print("Arquivo favoritos.csv não encontrado, criando.")
             with open("favoritos.csv", "w") as arquivo:
-                arquivo.write("id,nomeid")
-            
+                arquivo.write("id,nomeid\n")            
             return
+        except Exception :
+            print()
 
         jogos = favoritos.to_dict(orient='records')
 
         for jogo in jogos:
             jogo_id = jogo['id']
-            response = requests.get(f'https://store.steampowered.com/api/appdetails?appids={jogo_id}')
+            response = requests.get(f'https://store.steampowered.com/api/appdetails?appids={jogo_id}&cc=br')
             dados = response.json()
             if dados[str(jogo_id)]['success']:
                 detalhes = dados[str(jogo_id)]['data']
@@ -67,5 +83,6 @@ class Favoritos(commands.Cog):
                         embed.add_field(name="Preço Original", value=preco_original, inline=False)
                         embed.add_field(name="Desconto", value=f"{preco_com_desconto}%", inline=False)
                         embed.set_image(url=imagem_jogo)  # Adiciona a imagem do jogo
-                        channel=self.bot.get_channel(1073403588296048652)                    
+                        channel=self.bot.get_channel(1296108836436049961)                 
+                        print(embed)   
                         await channel.send(embed=embed)

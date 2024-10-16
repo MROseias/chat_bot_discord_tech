@@ -101,7 +101,7 @@ class Jogos(commands.Cog):
                 msg = await self.bot.wait_for('message', check=check, timeout=30)
 
                 if msg.content.lower() == 'sim':
-                    id=jogo
+                    id=int(jogo)
                     nome=await self.get_localized_name(id)
                     dicionario={
                         "id":id,
@@ -109,7 +109,12 @@ class Jogos(commands.Cog):
                     }
                     dataframe=pd.DataFrame([dicionario])
                     dataframe.to_csv("favoritos.csv",mode="a", index=False, header=False)
-                    await ctx.send(f'Ok, adicionando **{nome}** aos seus favoritos...')
+                    
+                    dataframe_arquivo=pd.read_csv('favoritos.csv')
+                    if(not (dataframe_arquivo['id'] == id).any()):
+                        await ctx.send(f'Ok, adicionando **{nome}** aos seus favoritos...')
+                    else:
+                        await ctx.send(f'**{nome}** já esta nos seus favoritos...')
                 else:
                     await ctx.send('Então tá')
 
